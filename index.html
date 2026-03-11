@@ -1,0 +1,2659 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+
+<title>Neon Attendance Pro - Master</title>
+
+<style>
+    
+    
+ 
+#studentList,
+#historyList{
+flex:1;
+overflow-y:auto;
+padding:10px;
+min-height:0;
+}
+
+    
+    
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI}
+
+
+body{
+height:100dvh;
+background:#0a0a0a;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+color:white;
+}
+
+
+
+.glass{
+
+width:95%;
+max-width:1000px;
+height:100dvh;
+
+background:#111111;
+
+border-radius:18px;
+
+border:1px solid #1f1f1f;
+
+display:flex;
+flex-direction:column;
+
+overflow:hidden;
+
+}
+
+
+
+
+input,select,button{
+padding:10px;border-radius:20px;border:none;font-weight:bold}
+input,select{
+background:rgba(255,255,255,0.1);color:white}
+button{background:#00f2fe;cursor:pointer;margin:3px}
+button:hover{transform:scale(1.05)}
+#loginPage{
+display:flex;flex-direction:column;justify-content:center;
+align-items:center;height:100%;gap:10px}
+.login-buttons{display:flex;gap:10px;width:300px}
+#app{display:none;flex-direction:column;height:100%}
+
+.header{
+
+padding:15px;
+
+background:#151515;
+
+border-bottom:1px solid #ff1e1e;
+
+font-size:16px;
+
+}
+
+
+.controls{
+padding:10px;
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+align-items:center;
+}
+
+
+
+
+
+
+.page{
+display:none;
+flex-direction:column;
+flex:1;
+min-height:0;   /* IMPORTANT for scroll fix */
+}
+
+.page.active{
+display:flex;
+}
+
+
+
+
+
+
+.student{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+background:#151515;
+
+margin:10px 0;
+
+padding:14px;
+
+border-radius:12px;
+
+border-left:4px solid #ff1e1e;
+
+transition:0.2s;
+
+}
+
+.student:hover{
+
+background:#1b1b1b;
+
+}
+
+.student span{
+flex:1;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+
+.student div{
+display:flex;
+align-items:center;
+gap:8px;
+flex-shrink:0;
+}
+
+
+
+
+
+.present{background:#00ff88;color:black}
+.absent{background:#ff4b5c;color:white}
+.stats{text-align:center;padding:5px}
+.credit{text-align:center;font-size:13px;padding:5px;opacity:0.8}
+.credit span{color:#00f2fe;text-shadow:0 0 10px #00f2fe}
+
+
+
+
+
+
+
+
+
+
+
+/* ========================= */
+/* ULTRA NEON LOGIN STYLE 😎 */
+/* ========================= */
+
+#loginPage{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+height:100%;
+gap:18px;
+padding:40px;
+background:rgba(0,0,0,0.35);
+border-radius:25px;
+backdrop-filter:blur(25px);
+box-shadow:0 0 60px rgba(0,255,255,0.6);
+animation:loginFade 0.8s ease;
+}
+
+#loginPage h2{
+font-size:24px;
+letter-spacing:1px;
+color:#00f2fe;
+text-shadow:0 0 20px #00f2fe;
+animation:glowText 2s infinite alternate;
+}
+
+#loginPage input{
+width:260px;
+padding:14px 20px;
+border-radius:30px;
+border:2px solid transparent;
+background:rgba(255,255,255,0.08);
+color:white;
+outline:none;
+transition:0.3s;
+font-size:14px;
+}
+
+#loginPage input:focus{
+border:2px solid #00f2fe;
+box-shadow:0 0 20px #00f2fe;
+background:rgba(0,0,0,0.4);
+}
+
+.login-buttons{
+display:flex;
+gap:15px;
+margin-top:10px;
+}
+
+#loginPage button{
+padding:12px 25px;
+border-radius:30px;
+border:none;
+font-weight:bold;
+cursor:pointer;
+background:linear-gradient(45deg,#00f2fe,#00ff88);
+color:#0f172a;
+transition:0.3s;
+}
+
+#loginPage button:hover{
+transform:scale(1.1);
+box-shadow:0 0 25px #00f2fe;
+}
+
+@keyframes glowText{
+from{ text-shadow:0 0 10px #00f2fe; }
+to{ text-shadow:0 0 30px #00ffea; }
+}
+
+@keyframes loginFade{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+
+
+
+
+
+
+
+
+
+/* ========================= */
+/* NEON FLOATING PARTICLES */
+/* ========================= */
+
+..particles{
+position:absolute;
+width:100%;
+height:100%;
+top:0;
+left:0;
+overflow:hidden;
+z-index:0;
+pointer-events:none;
+}
+
+..particles span{
+position:absolute;
+display:block;
+width:4px; /* thoda small */
+height:4px;
+background:#00f2fe;
+border-radius:50%;
+bottom:-20px;
+animation:floatUp linear infinite;
+box-shadow:0 0 5px #00f2fe,
+            0 0 10px #00f2fe;
+opacity:0.6; /* softer look */
+}
+
+@keyframes floatUp{
+0%{
+transform:translateY(0) scale(1);
+opacity:0;
+}
+10%{
+opacity:1;
+}
+100%{
+transform:translateY(-110vh) scale(0.5);
+opacity:0;
+}
+}
+
+
+
+
+
+
+
+
+.neonText{
+color:#22d3ee;
+text-shadow:
+0 0 5px #22d3ee,
+0 0 10px #22d3ee,
+0 0 20px #22d3ee,
+0 0 40px #06b6d4;
+animation:textPulse 2s infinite alternate;
+}
+
+@keyframes textPulse{
+from{ text-shadow:0 0 10px #22d3ee;}
+to{ text-shadow:0 0 30px #06b6d4;}
+}
+
+
+
+
+
+
+
+
+button{
+
+background:#ff1e1e;
+
+color:white;
+
+border:none;
+
+border-radius:8px;
+
+padding:10px 16px;
+
+cursor:pointer;
+
+transition:0.2s;
+
+}
+
+button:hover{
+
+background:#ff3838;
+
+}
+
+button:hover{
+transform:scale(1.05);
+box-shadow:
+0 0 10px #22d3ee,
+0 0 20px #22d3ee,
+0 0 40px #06b6d4;
+}
+
+button:active{
+transform:scale(0.95);
+box-shadow:
+0 0 5px #22d3ee,
+0 0 30px #06b6d4 inset;
+}
+
+
+
+
+
+
+.student{
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(34,211,238,0.2);
+box-shadow:0 0 10px rgba(34,211,238,0.2);
+transition:0.3s;
+}
+
+.student:hover{
+box-shadow:
+0 0 10px #22d3ee,
+0 0 20px #22d3ee;
+transform:scale(1.02);
+}
+
+
+
+
+input:focus, select:focus{
+box-shadow:
+0 0 10px #22d3ee,
+0 0 20px #06b6d4;
+border:1px solid #22d3ee;
+}
+
+
+
+
+
+
+
+/* ========================= */
+/* NEON ANIMATED BORDER BUTTON */
+/* ========================= */
+
+.neonButton{
+position:relative;
+padding:12px 28px;
+border-radius:30px;
+background:rgba(0,0,0,0.6);
+color:#22d3ee;
+font-weight:bold;
+border:none;
+cursor:pointer;
+overflow:hidden;
+z-index:1;
+}
+
+.neonButton::before{
+content:"";
+position:absolute;
+top:-2px;
+left:-2px;
+right:-2px;
+bottom:-2px;
+background:linear-gradient(
+90deg,
+#22d3ee,
+#06b6d4,
+#00ff88,
+#22d3ee
+);
+background-size:300%;
+border-radius:30px;
+z-index:-1;
+animation:neonMove 4s linear infinite;
+}
+
+.neonButton::after{
+content:"";
+position:absolute;
+top:2px;
+left:2px;
+right:2px;
+bottom:2px;
+background:#0f172a;
+border-radius:28px;
+z-index:-1;
+}
+
+@keyframes neonMove{
+0%{background-position:0%}
+100%{background-position:300%}
+}
+
+.neonButton:hover{
+color:white;
+box-shadow:
+0 0 10px #22d3ee,
+0 0 20px #22d3ee,
+0 0 40px #06b6d4;
+transform:scale(1.05);
+}
+
+
+
+
+
+/* ========================= */
+/* STUDENT STATUS GLOW */
+/* ========================= */
+
+
+
+
+
+.student.presentRow{
+border-left:4px solid #00ff88;
+box-shadow:none;
+}
+
+.student.absentRow{
+border-left:4px solid #ff1e1e;
+box-shadow:none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.presentGlow{
+border:2px solid #00ff88;
+box-shadow:
+0 0 10px #00ff88,
+0 0 25px #00ff88;
+}
+
+.absentGlow{
+border:2px solid #ff4b5c;
+box-shadow:
+0 0 10px #ff4b5c,
+0 0 25px #ff4b5c;
+}
+
+
+
+
+
+
+
+/* PROFILE POPUP */
+
+.profilePopup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.profileCard{
+background:#0f172a;
+padding:25px;
+border-radius:20px;
+text-align:center;
+width:80%;
+max-width:320px;
+box-shadow:0 0 25px #22d3ee;
+}
+
+.profileCard p{
+margin:8px 0;
+font-size:16px;
+}
+
+
+
+
+
+
+
+.profilePopup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.profileCard{
+background:#0f172a;
+padding:25px;
+border-radius:20px;
+width:300px;
+text-align:center;
+box-shadow:0 0 30px #22d3ee;
+}
+
+.profileCard h2{
+color:#22d3ee;
+text-shadow:0 0 10px #22d3ee;
+}
+
+.profileCard button{
+margin-top:15px;
+}
+
+
+
+.keyboardOpen #bottomArea{
+display:none;
+}
+
+
+
+
+
+#undoBox button{
+color:#22d3ee;
+}
+
+
+
+#undoBox button{
+color:white !important;
+}
+
+
+
+#loginPage button{
+color:white !important;
+}
+
+
+
+
+
+.controls input,
+.controls select{
+flex:1 1 140px;
+min-width:120px;
+}
+
+
+
+.controls button{
+flex:1 1 140px;
+max-width:200px;
+}
+
+
+
+
+
+
+
+
+
+
+.menuBtn{
+font-size:26px;
+cursor:pointer;
+margin-right:10px;
+}
+
+.sideMenu{
+position:fixed;
+top:0;
+left:-260px;
+width:260px;
+height:100%;
+background:#020617;
+
+padding:20px;
+display:flex;
+flex-direction:column;
+gap:15px;
+
+transition:0.3s;
+z-index:2000;
+
+/* glow ko andar limit karne ke liye */
+overflow:hidden;
+box-shadow:0 0 30px #22d3ee inset;
+}
+
+.sideMenu.open{
+left:0;
+}
+
+
+
+
+
+
+
+.menuOverlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+backdrop-filter:blur(5px);
+opacity:0;
+pointer-events:none;
+transition:0.3s;
+z-index:1500;
+}
+
+.menuOverlay.show{
+opacity:1;
+pointer-events:auto;
+}
+
+
+
+
+.activeMenu{
+box-shadow:0 0 20px #22d3ee,0 0 40px #22d3ee;
+border:1px solid #22d3ee;
+}
+
+
+
+
+
+
+
+
+
+.student{
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:15px;
+margin:12px 0;
+
+border-radius:18px;
+
+background:rgba(15,23,42,0.6);
+backdrop-filter:blur(10px);
+
+border:1px solid rgba(34,211,238,0.2);
+
+box-shadow:
+0 0 10px rgba(34,211,238,0.3),
+inset 0 0 20px rgba(34,211,238,0.1);
+
+transition:0.3s;
+}
+
+.student:hover{
+
+transform:translateY(-3px);
+
+box-shadow:
+0 0 15px #22d3ee,
+0 0 35px rgba(34,211,238,0.6);
+
+}
+
+
+
+
+
+
+
+
+
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+</head>
+
+<body>
+<div class="glass">
+    
+    
+    <div class="particles"></div>
+    
+
+<!-- LOGIN -->
+<div id="loginPage">
+<h2>🔐 Teacher Register / Login</h2>
+<input type="email" id="teacherEmail" placeholder="Email">
+<input type="password" id="teacherPass" placeholder="Password">
+<div class="login-buttons">
+<button class="neonButton" id="registerBtn">Register</button>
+<button class="neonButton" id="loginBtn">Login</button>
+</div>
+<div id="errorMsg" style="color:#ff4b5c"></div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<div class="header neonText">
+
+<span class="menuBtn" onclick="openMenu()">☰</span>
+
+📘 Neon Attendance Pro | <span id="welcome"></span>
+
+</div>
+
+
+<div id="sideMenu" class="sideMenu">
+
+<h2 class="neonText">Menu</h2>
+
+<button id="menuAttendance" class="neonButton" onclick="showAttendance();closeMenu()">
+📋 Attendance
+</button>
+
+<button id="menuHistory" class="neonButton" onclick="showHistory();closeMenu()">
+📊 History
+</button>
+
+<button id="menuDownloads" class="neonButton" onclick="showDownloads();closeMenu()">
+📁 Downloads
+</button>
+
+<button class="neonButton" onclick="logout()">
+🚪 Logout
+</button>
+
+</div>
+
+
+
+<div id="menuOverlay" class="menuOverlay" onclick="closeMenu()"></div>
+
+
+
+
+<!-- ATTENDANCE PAGE -->
+<div id="attendancePage" class="page active">
+    
+    
+
+<div class="controls">
+<select id="classSelect"></select>
+<input type="date" id="dateSelect" onchange="loadAttendanceByDate()">
+
+
+
+
+
+
+<input type="file" id="imageUpload" accept="image/*" multiple hidden>
+
+
+
+
+
+
+
+<input
+type="number"
+id="studentRoll"
+placeholder="Roll Number"
+style="padding:10px;border-radius:10px;margin-right:10px;">
+
+<input type="text" id="studentName" placeholder="Student Name">
+
+
+<input 
+type="tel" 
+id="parentNumber"
+placeholder="Parent Mobile Number"
+class="neonInput">
+
+
+<button class="neonButton" onclick="addStudent()">Add</button>
+
+
+<button class="neonButton" onclick="importStudentList()">
+📋 Import Student List
+</button>
+
+
+<button class="neonButton" onclick="downloadCSV()">Download CSV</button>
+
+
+<button class="neonButton" onclick="clearTodayAttendance()">Clear Today</button>
+
+
+<button class="neonButton" onclick="saveTodayToHistory()">Save To History</button>
+
+
+<button class="neonButton" onclick="sendAllParents()">
+📢 Notify All Parents
+</button>
+
+
+</div>
+
+<div id="classTeacher" style="text-align:center"></div>
+
+<div id="studentList"></div>
+
+<div class="stats" id="stats"></div>
+
+
+<div class="credit">
+© 2026 | Designed & Developed By <span>Zakariya Mukadam</span>
+</div>
+
+
+</div>
+
+<!-- HISTORY PAGE -->
+
+
+<div id="historyPage" class="page">
+
+<div class="controls">
+<select id="historyMonth"></select>
+
+
+<input 
+type="text" 
+id="searchStudent" 
+placeholder="Search student name..."
+onkeyup="filterHistory()" 
+style="padding:10px;border-radius:10px;margin-right:10px;">
+
+
+
+<button class="neonButton" onclick="loadHistory()">Load</button>
+
+<button class="neonButton" onclick="clearHistory()" style="background:#ff4b5c;color:white">
+Clear History
+</button>
+
+</div>
+
+<div id="historyList"></div>
+
+
+<div style="text-align:center;margin:10px;">
+<button class="neonButton" id="toggleReportBtn" onclick="toggleReport()" style="
+background:#00f2fe;
+border:none;
+padding:8px 14px;
+border-radius:20px;
+font-size:18px;
+cursor:pointer;
+">
+▲ Report
+</button>
+</div>
+
+<div id="reportSection" style="display:none;">
+
+
+<div id="attendancePercent" style="text-align:center;font-size:18px;font-weight:bold;margin:10px;color:#00ff88;"></div>
+
+
+
+<div id="monthlyReport" style="
+text-align:center;
+margin:10px;
+font-size:16px;
+font-weight:bold;
+color:#00f2fe;
+"></div>
+
+
+
+
+<div id="graphBox">
+                
+    
+<canvas id="analyticsChart"></canvas>
+</div>
+
+
+</div>
+
+<div id="undoBox" style="
+display:none;
+background:#ff4b5c;
+padding:10px;
+margin:10px;
+text-align:center;
+border-radius:10px;
+">
+History will be deleted in 10 seconds...
+<button class="neonButton" onclick="undoDelete()" style="margin-left:10px;background:white;color:black">
+UNDO
+</button>
+</div>
+
+
+
+
+<button class="neonButton" onclick="downloadMonthlyCSV()">Download Monthly CSV</button>
+
+<div class="credit">
+© 2026 | Designed & Developed By <span>Zakariya Mukadam</span>
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="downloadsPage" class="page">
+
+<div class="controls">
+
+<h2 class="neonText">📂 Download Records</h2>
+
+<button class="neonButton" onclick="clearDownloads()" style="background:#ff4b5c;color:white">
+Clear All
+</button>
+
+</div>
+
+<div id="downloadsList"></div>
+
+<div class="credit">
+© 2026 | Designed & Developed By <span>Zakariya Mukadam</span>
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- STUDENT PROFILE POPUP -->
+
+<div id="studentProfilePopup" class="profilePopup">
+
+<div class="profileCard">
+
+<h2 class="neonText">Student Profile</h2>
+
+<p id="profileName"></p>
+<p id="profileRoll"></p>
+<p id="profileClass"></p>
+
+<p id="profilePresent"></p>
+<p id="profileAbsent"></p>
+<p id="profilePercent"></p>
+
+<button class="neonButton" onclick="closeProfile()">Close</button>
+
+</div>
+
+</div>
+
+
+
+
+
+<div id="studentProfilePopup" class="profilePopup">
+
+<div class="profileCard">
+
+<h2 id="profileName"></h2>
+
+<p id="profileRoll"></p>
+<p id="profileClass"></p>
+
+<div id="profileStats"></div>
+
+<button onclick="closeProfile()">Close</button>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="importBox" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+justify-content:center;
+align-items:center;
+z-index:2000;
+">
+
+<div style="
+background:#0f172a;
+padding:20px;
+border-radius:20px;
+width:90%;
+max-width:400px;
+box-shadow:0 0 20px #22d3ee;
+text-align:center;
+">
+
+<h3 class="neonText">Paste Student List</h3>
+
+<textarea id="studentImportText"
+style="
+width:100%;
+height:200px;
+margin-top:10px;
+padding:10px;
+border-radius:10px;
+background:#020617;
+color:white;
+border:1px solid #22d3ee;
+"
+placeholder="Example:
+
+1 Mukadam Zakariya
+2 Hanzala Akram
+3 Furqan Muazzam
+"></textarea>
+
+<br><br>
+
+<button class="neonButton" onclick="processImport()">Import</button>
+<button class="neonButton" onclick="closeImport()">Cancel</button>
+
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<script type="module">
+    
+  let unsubscribe = null;  
+  
+ 
+  
+  
+    
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc,
+updateDoc, deleteDoc, query, where, onSnapshot, orderBy }
+from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+
+
+
+
+
+
+// =============================
+// SAFE PARTICLE GENERATOR
+// =============================
+
+window.addEventListener("DOMContentLoaded", () => {
+
+const container = document.querySelector(".particles");
+
+if(!container) return; // safety check
+
+for(let i=0;i<50;i++){
+
+let particle = document.createElement("span");
+
+particle.style.left = Math.random()*100 + "%";
+particle.style.animationDuration = (8 + Math.random()*12) + "s";
+particle.style.opacity = Math.random();
+
+container.appendChild(particle);
+
+}
+
+});
+
+
+
+
+
+
+
+
+const firebaseConfig = {
+apiKey: "AIzaSyD-ALQAWk3vDfEX5MoeJ5yMFskuyA1wBiA",
+authDomain: "neon-attendance-system.firebaseapp.com",
+projectId: "neon-attendance-system",
+storageBucket: "neon-attendance-system.firebasestorage.app",
+messagingSenderId: "1007195721127",
+appId: "1:1007195721127:web:449457ade62226c5b9ba82"
+};
+
+const appFirebase = initializeApp(firebaseConfig);
+const auth = getAuth(appFirebase);
+const db = getFirestore(appFirebase);
+
+let currentTeacher=null;
+
+
+
+let pendingDeletes = [];
+let deleteTimer = null;
+
+const classes=[
+"11th Arts","11th Commerce","11th Science",
+"12th Arts","12th Commerce","12th Science"
+];
+
+classes.forEach(c=>{
+classSelect.innerHTML+=`<option>${c}</option>`;
+});
+
+dateSelect.value=new Date().toISOString().split("T")[0];
+
+registerBtn.onclick=async()=>{
+try{
+await createUserWithEmailAndPassword(auth,teacherEmail.value,teacherPass.value);
+}catch(e){errorMsg.innerText=e.message;}
+};
+
+loginBtn.onclick=async()=>{
+try{
+await signInWithEmailAndPassword(auth,teacherEmail.value,teacherPass.value);
+}catch(e){errorMsg.innerText=e.message;}
+};
+
+window.logout=()=>signOut(auth);
+
+onAuthStateChanged(auth,(user)=>{
+if(user){
+currentTeacher=user.email;
+loginPage.style.display="none";
+app.style.display="flex";
+welcome.innerText=" | "+currentTeacher;
+renderStudents();
+}else{
+loginPage.style.display="flex";
+app.style.display="none";
+}
+});
+
+
+
+
+
+
+window.showAttendance=()=>{
+attendancePage.classList.add("active");
+historyPage.classList.remove("active");
+downloadsPage.classList.remove("active");
+
+setActiveMenu("menuAttendance");
+};
+
+
+
+
+
+
+
+
+window.showHistory=()=>{
+attendancePage.classList.remove("active");
+historyPage.classList.add("active");
+downloadsPage.classList.remove("active");
+
+setActiveMenu("menuHistory");
+
+populateMonths();
+};
+
+
+
+
+
+
+
+window.addStudent=async()=>{
+if(!studentName.value)return;
+
+await addDoc(collection(db, "attendance_today"), {
+teacher: currentTeacher,
+class: classSelect.value,
+date: dateSelect.value,
+roll: studentRoll.value,
+name: studentName.value,
+status: "Present",
+createdAt: new Date()
+});
+
+
+
+
+
+await addDoc(collection(db, "class_students"), { 
+teacher: currentTeacher, 
+class: classSelect.value, 
+roll: studentRoll.value, 
+name: studentName.value,
+parent: parentNumber.value,
+createdAt: new Date() 
+});
+
+
+
+
+
+
+
+
+studentName.value="";
+renderStudents();
+};
+
+
+
+
+
+
+
+async function renderStudents(){
+
+if(unsubscribe) unsubscribe();   // old listener remove
+
+let q=query(
+collection(db,"attendance_today"),
+
+
+
+where("teacher","==",currentTeacher),
+where("class","==",classSelect.value),
+where("date","==",dateSelect.value),
+orderBy("createdAt","asc")
+);
+
+unsubscribe = onSnapshot(q,(snap)=>{
+
+studentList.innerHTML="";
+let total=0,present=0;
+
+
+snap.forEach(docSnap=>{
+let s=docSnap.data();
+total++;
+if(s.status==="Present")present++;
+
+studentList.innerHTML+=`
+<div class="student ${s.status==='Present'?'presentRow':'absentRow'}"
+onclick="openProfile('${s.name}','${s.roll}','${classSelect.value}')">
+
+<span>(${s.roll}) ${s.name}</span>
+<div>
+
+<button class="${s.status==='Present'?'present':'absent'}"
+onclick="event.stopPropagation();toggleStatus('${docSnap.id}','${s.status}')">
+${s.status}
+</button>
+
+<button onclick="event.stopPropagation();editStudent('${docSnap.id}','${s.name}')">✏</button>
+
+<button onclick="event.stopPropagation();deleteStudent('${docSnap.id}')">🗑</button>
+
+</div>
+</div>`;
+
+});
+
+stats.innerText=`Total: ${total} | Present: ${present}`;
+
+});
+}
+
+
+window.toggleStatus = async(id,status)=>{
+
+let newStatus = status==="Present" ? "Absent" : "Present";
+
+await updateDoc(doc(db,"attendance_today",id),{
+status:newStatus
+});
+
+// student name read
+let studentName = event.target.closest(".student").querySelector("span").innerText;
+
+// Firestore se parent number read
+let q = query(
+collection(db,"class_students"),
+where("teacher","==",currentTeacher),
+where("class","==",classSelect.value),
+where("name","==",studentName.split(") ")[1])
+);
+
+let snap = await getDocs(q);
+
+let parentNumber = "";
+
+snap.forEach(d=>{
+parentNumber = d.data().parent;
+});
+
+if(parentNumber){
+sendParentMessage(studentName,newStatus,parentNumber);
+}
+
+renderStudents();
+};
+
+window.editStudent=async(id,name)=>{
+let newName=prompt("Edit Name:",name);
+if(newName)
+await updateDoc(doc(db,"attendance_today",id),{name:newName});
+renderStudents();
+};
+
+window.deleteStudent = async function(id){
+
+if(!confirm("Delete student?")) return;
+
+try{
+
+// Firestore se delete
+await deleteDoc(doc(db,"attendance_today",id));
+
+/* listener reset */
+if(unsubscribe){
+unsubscribe();
+unsubscribe = null;
+}
+
+// list dubara load
+renderStudents();
+
+}catch(err){
+
+console.error(err);
+alert("Delete failed");
+
+}
+
+};
+
+
+
+function populateMonths(){
+
+let months = new Set();
+
+getDocs(collection(db,"attendance_history")).then(snap=>{
+
+snap.forEach(d=>{
+if(d.data().teacher === currentTeacher){
+months.add(d.data().date.substring(0,7));
+}
+});
+
+historyMonth.innerHTML = "";
+
+months.forEach(m=>{
+historyMonth.innerHTML += `<option>${m}</option>`;
+});
+
+// AUTO LOAD HISTORY
+if(historyMonth.options.length > 0){
+historyMonth.selectedIndex = 0;
+loadHistory();
+}
+
+});
+
+}
+
+
+window.loadHistory=()=>{
+let month=historyMonth.value;
+historyList.innerHTML="";
+
+getDocs(collection(db,"attendance_history")).then(snap=>{
+
+snap.forEach(d=>{
+let data=d.data();
+
+if(data.teacher===currentTeacher && data.date.startsWith(month)){
+
+let glowClass = data.status === "Present" ? "presentGlow" : "absentGlow";
+
+
+if(data.status === "Present"){
+glowClass = "presentGlow";
+}else{
+glowClass = "absentGlow";
+}
+
+historyList.innerHTML+=`
+<div class="student ${glowClass}" onclick="handleStudentClick(event,'${data.name}','-','${data.class}')">
+
+<span>${data.date} - ${data.class} - ${data.name} - ${data.status}</span>
+
+<button class="deleteBtn" onclick="deleteHistory('${d.id}')">🗑</button>
+
+</div>`;
+}
+
+});
+
+generateAnalytics();   // ✅ Yaha hona chahiye
+
+});
+
+};
+
+
+
+
+
+
+
+
+window.filterHistory = function(){
+
+let input = document.getElementById("searchStudent").value.toLowerCase();
+
+document.querySelectorAll("#historyList .student").forEach(row=>{
+
+let nameText = row.querySelector("span").innerText.toLowerCase();
+
+if(nameText.includes(input)){
+row.style.display="flex";
+}else{
+row.style.display="none";
+}
+
+});
+
+};
+
+
+
+
+
+window.filterHistory = function(){
+
+let input = document.getElementById("searchStudent").value.toLowerCase();
+
+document.querySelectorAll("#historyList .student").forEach(row=>{
+
+let text = row.innerText.toLowerCase();
+
+if(text.includes(input)){
+row.style.display="flex";
+}else{
+row.style.display="none";
+}
+
+});
+
+};
+
+
+// 👇 Yaha paste karo
+const searchInput = document.getElementById("searchStudent");
+const graphBox = document.getElementById("graphBox");
+
+searchInput.addEventListener("focus", ()=>{
+graphBox.style.display="none";
+});
+
+searchInput.addEventListener("blur", ()=>{
+graphBox.style.display="block";
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+window.deleteHistory = async(event,id)=>{
+event.stopPropagation();
+
+await deleteDoc(doc(db,"attendance_history",id));
+};
+
+window.undoDelete = () => {
+clearTimeout(deleteTimer);
+pendingDeletes = [];
+document.getElementById("undoBox").style.display="none";
+alert("Delete Cancelled");
+};
+
+
+
+
+
+window.clearHistory = async () => {
+
+let month = historyMonth.value;
+
+if(!month){
+alert("Please select month first");
+return;
+}
+
+// Confirm first
+if(!confirm("Are you sure you want to delete ALL history of this month?")){
+return;
+}
+
+let snap = await getDocs(collection(db,"attendance_history"));
+
+pendingDeletes = [];
+
+snap.forEach(d=>{
+let data = d.data();
+
+if(data.teacher===currentTeacher && data.date.startsWith(month)){
+pendingDeletes.push(d.id);
+}
+});
+
+if(pendingDeletes.length===0){
+alert("No records found");
+return;
+}
+
+showUndoMessage();
+
+deleteTimer = setTimeout(async ()=>{
+
+let deletePromises = [];
+
+pendingDeletes.forEach(id=>{
+deletePromises.push(deleteDoc(doc(db,"attendance_history",id)));;
+});
+
+await Promise.all(deletePromises);
+
+pendingDeletes = [];
+document.getElementById("undoBox").style.display="none";
+loadHistory();
+
+},10000);
+
+};
+
+let chartInstance = null;
+
+
+
+
+
+
+window.generateAnalytics = async () => {
+
+let month = historyMonth.value;
+let presentCount = 0;
+let totalCount = 0;
+let percentage = 0;
+
+
+let q = query(
+collection(db,"attendance_history"),
+where("teacher","==",currentTeacher)
+);
+
+let snap = await getDocs(q);
+
+snap.forEach(d=>{
+let data = d.data();
+if(data.date.startsWith(month)){
+totalCount++;
+if(data.status==="Present") presentCount++;
+}
+});
+
+let absentCount = totalCount - presentCount;
+
+
+if(totalCount > 0){
+percentage = Math.round((presentCount / totalCount) * 100);
+}
+
+
+
+
+document.getElementById("attendancePercent").innerText =
+"Attendance: " + percentage + "%";
+
+
+
+document.getElementById("monthlyReport").innerHTML =
+"Total Records: " + totalCount +
+"<br>Present: " + presentCount +
+"<br>Absent: " + absentCount +
+"<br>Attendance: " + percentage + "%";
+
+
+
+
+
+
+
+
+
+
+let canvas = document.getElementById("analyticsChart");
+if(!canvas) return;
+
+let ctx = canvas.getContext("2d");
+
+
+// Destroy old chart if exists
+if(chartInstance){
+chartInstance.destroy();
+}
+
+
+
+
+const percentagePlugin = {
+id:'percentageLabel',
+afterDraw(chart){
+
+const {ctx, chartArea:{top,width}} = chart;
+
+ctx.save();
+ctx.font = "bold 22px Arial";
+ctx.fillStyle = "#00ff88";
+ctx.textAlign = "center";
+
+ctx.fillText(
+percentage + "% Attendance",
+chart.width/2,
+top - 10
+);
+
+}
+};
+
+
+
+
+
+
+chartInstance = new Chart(ctx,{
+type:'bar',
+data:{
+labels:['Present','Absent'],
+datasets:[{
+data:[presentCount, absentCount],
+
+
+backgroundColor:[
+'rgba(0,255,136,0.6)',
+'rgba(255,75,92,0.6)'
+],
+
+
+
+borderColor:[
+'#00ff88',
+'#ff4b5c'
+],
+borderWidth:3,
+hoverBorderWidth:5
+}]
+},
+options:{
+responsive:true,
+plugins:{
+legend:{display:false}
+},
+scales:{
+y:{
+beginAtZero:true,
+ticks:{color:'white'},
+grid:{color:'rgba(255,255,255,0.1)'}
+},
+x:{
+ticks:{color:'white'},
+grid:{display:false}
+}
+},
+animation:{
+duration:1200,
+easing:'easeOutQuart'
+}
+}
+});
+
+};
+
+
+function showUndoMessage(){
+let box = document.getElementById("undoBox");
+box.style.display="block";
+}
+
+
+
+window.loadAttendance = () => {
+renderStudents();
+};
+
+
+
+
+classSelect.addEventListener("change", renderStudents);
+dateSelect.addEventListener("change", renderStudents);
+
+
+
+
+
+window.clearTodayAttendance = async () => {
+
+    if(!confirm("Clear only today's attendance?")) return;
+    
+    
+    await saveTodayToHistory();
+
+    let q = query(
+        collection(db,"attendance_today"),
+        where("teacher","==",currentTeacher),
+        where("class","==",classSelect.value),
+        where("date","==",dateSelect.value)
+    );
+
+    let snap = await getDocs(q);
+
+    snap.forEach(async (d)=>{
+       await deleteDoc(doc(db,"attendance_today",d.id));
+    });
+
+    alert("Today's attendance cleared only.");
+
+};
+
+
+
+
+
+
+
+
+
+window.saveTodayToHistory = async () => {
+
+let q = query(
+collection(db,"attendance_today"),
+where("teacher","==",currentTeacher),
+where("class","==",classSelect.value),
+where("date","==",dateSelect.value)
+);
+
+let snap = await getDocs(q);
+
+if(snap.empty){
+alert("No attendance to save");
+return;
+}
+
+for (const d of snap.docs){
+
+let data = d.data();
+
+// check if already saved
+let checkQuery = query(
+collection(db,"attendance_history"),
+where("teacher","==",data.teacher),
+where("class","==",data.class),
+where("date","==",data.date),
+where("name","==",data.name)
+);
+
+let checkSnap = await getDocs(checkQuery);
+
+if(checkSnap.empty){
+
+await addDoc(collection(db,"attendance_history"),{
+teacher:data.teacher,
+class:data.class,
+date:data.date,
+roll:data.roll,
+name:data.name,
+status:data.status,
+createdAt:new Date()
+});
+
+}else{
+
+// update existing record
+checkSnap.forEach(async (docSnap)=>{
+await updateDoc(doc(db,"attendance_history",docSnap.id),{
+status:data.status
+});
+});
+
+}
+}
+
+alert("Attendance saved to history ✅");
+
+};
+
+
+
+
+
+
+
+
+
+
+window.downloadCSV = function() {
+
+
+saveDownloadRecord("Attendance CSV");
+
+    let rows = [];
+    rows.push(["Roll No", "Name", "Status"]);
+
+    document.querySelectorAll(".student").forEach(student => {
+
+let name = student.querySelector("span")?.innerText || "";
+let status = student.querySelector(".present, .absent")?.innerText || "";
+
+rows.push([name, status]);
+
+});
+
+    let csvContent = rows.map(e => e.join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "attendance.csv";
+    a.style.display = "none";
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+};
+
+
+
+
+
+
+window.downloadMonthlyCSV = async function() {
+
+    let month = historyMonth.value;
+
+
+saveDownloadRecord("Monthly CSV");
+
+
+    if(!month){
+        alert("Please select month first");
+        return;
+    }
+
+    let rows = [];
+    rows.push(["Date","Class","Name","Status"]);
+
+   let q = query(
+collection(db,"attendance_history"),
+where("teacher","==",currentTeacher)
+);
+    let snap = await getDocs(q);
+
+    snap.forEach(d=>{
+        let data = d.data();
+
+        if(data.date.startsWith(month)){
+            rows.push([
+                data.date,
+                data.class,
+                data.name,
+                data.status
+            ]);
+        }
+    });
+
+    if(rows.length === 1){
+        alert("No data found for this month");
+        return;
+    }
+
+    let csvContent = rows.map(e => e.join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Attendance_${month}.csv`;
+    a.style.display = "none";
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+};
+
+
+
+
+
+
+
+
+
+window.toggleReport = function(){
+
+let section = document.getElementById("reportSection");
+let btn = document.getElementById("toggleReportBtn");
+
+if(section.style.display === "none"){
+
+section.style.display = "block";
+btn.innerText = "▲ Report";
+
+if(chartInstance){
+chartInstance.update(); // animation trigger
+}
+
+section.scrollIntoView({behavior:"smooth"});
+
+}else{
+
+section.style.display = "none";
+btn.innerText = "▼ Report";
+
+}
+
+};
+
+
+
+window.loadAttendanceByDate = ()=>{
+renderStudents();
+};
+
+
+
+
+
+window.openProfile = async function(name, roll, className){
+
+document.getElementById("profileName").innerText =
+"Name: " + name;
+
+document.getElementById("profileRoll").innerText =
+"Roll: " + roll;
+
+document.getElementById("profileClass").innerText =
+"Class: " + className;
+
+let present = 0;
+let total = 0;
+
+let snap = await getDocs(collection(db,"attendance_history"));
+
+snap.forEach(doc=>{
+
+let data = doc.data();
+
+if(data.teacher===currentTeacher && data.name===name){
+
+total++;
+
+if(data.status==="Present"){
+present++;
+}
+
+}
+
+});
+
+let absent = total - present;
+
+let percent = 0;
+
+if(total>0){
+percent = Math.round((present/total)*100);
+}
+
+document.getElementById("profileStats").innerHTML =
+
+"Total Days: "+total+
+"<br>Present: "+present+
+"<br>Absent: "+absent+
+"<br>Attendance: "+percent+"%";
+
+document.getElementById("studentProfilePopup").style.display="flex";
+
+};
+
+
+
+
+window.closeProfile = function(){
+document.getElementById("studentProfilePopup").style.display = "none";
+}
+
+
+
+
+
+
+
+
+window.handleStudentClick = function(event,name,roll,className){
+
+// agar delete button click hua hai to popup mat kholo
+if(event.target.classList.contains("deleteBtn")){
+return;
+}
+
+openProfile(name,roll,className);
+
+};
+
+
+
+
+
+window.closeProfile = function(){
+document.getElementById("studentProfilePopup").style.display="none";
+};
+
+
+
+document.addEventListener("focusin", function(e){
+
+if(e.target.tagName === "INPUT"){
+document.body.classList.add("keyboardOpen");
+}
+
+});
+
+document.addEventListener("focusout", function(e){
+
+if(e.target.tagName === "INPUT"){
+document.body.classList.remove("keyboardOpen");
+}
+
+});
+
+
+
+
+
+
+const bottomNav = document.querySelector(".bottomNav");
+const stats = document.querySelector(".stats");
+const credit = document.querySelector(".credit");
+
+document.addEventListener("focusin", (e)=>{
+if(e.target.tagName === "INPUT"){
+if(bottomNav) bottomNav.style.display="none";
+if(stats) stats.style.display="none";
+if(credit) credit.style.display="none";
+}
+});
+
+document.addEventListener("focusout", (e)=>{
+if(e.target.tagName === "INPUT"){
+if(bottomNav) bottomNav.style.display="flex";
+if(stats) stats.style.display="block";
+if(credit) credit.style.display="block";
+}
+});
+
+
+
+
+
+
+
+const studentList = document.getElementById("studentList");
+
+document.addEventListener("focusin", (e)=>{
+if(e.target.tagName === "INPUT"){
+setTimeout(()=>{
+studentList.scrollTop = studentList.scrollHeight;
+},300);
+}
+});
+
+
+
+
+
+
+
+
+
+
+window.importStudentList = function(){
+document.getElementById("importBox").style.display="flex";
+}
+
+window.closeImport = function(){
+document.getElementById("importBox").style.display="none";
+}
+
+
+
+
+
+
+
+
+
+
+
+window.processImport = async function(){
+
+let text = document.getElementById("studentImportText").value;
+
+if(!text.trim()){
+alert("Paste student list first");
+return;
+}
+
+let lines = text.split("\n");
+
+for(let line of lines){
+
+line = line.trim();
+if(!line) continue;
+
+let roll = "";
+let name = "";
+
+// detect roll number
+let match = line.match(/^(\d+)\s+(.*)$/);
+
+if(match){
+roll = match[1];
+name = match[2];
+}else{
+name = line;
+}
+
+
+
+await addDoc(collection(db,"attendance_today"),{
+teacher: currentTeacher,
+class: classSelect.value,
+date: dateSelect.value,
+roll: roll,
+name: name,
+status: "Absent",
+createdAt: new Date()
+});
+
+}
+
+document.getElementById("studentImportText").value="";
+document.getElementById("importBox").style.display="none";
+
+renderStudents();
+
+alert("Students imported successfully ✅");
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+window.showDownloads = ()=>{
+attendancePage.classList.remove("active");
+historyPage.classList.remove("active");
+downloadsPage.classList.add("active");
+loadDownloads();
+};
+
+
+
+
+
+
+
+
+function saveDownloadRecord(name){
+
+let downloads = JSON.parse(localStorage.getItem("downloads") || "[]");
+
+// duplicate remove
+downloads = downloads.filter(d => d.name !== name);
+
+downloads.unshift({
+name:name,
+date:new Date().toLocaleString()
+});
+
+localStorage.setItem("downloads",JSON.stringify(downloads));
+
+}
+
+
+
+
+
+
+
+
+
+function loadDownloads(){
+
+let downloads = JSON.parse(localStorage.getItem("downloads") || "[]");
+
+downloads.reverse();
+
+
+downloadsList.innerHTML="";
+
+downloads.forEach((d,i)=>{
+
+downloadsList.innerHTML+=`
+<div class="student">
+
+<span>${d.name} <br> ${d.date}</span>
+
+<div>
+<button onclick="downloadAgain('${d.name}')">⬇</button>
+<button onclick="deleteDownload(${i})">🗑</button>
+</div>
+
+</div>
+`;
+
+});
+
+}
+
+
+
+
+
+
+
+window.openMenu = function(){
+document.getElementById("sideMenu").classList.add("open");
+document.getElementById("menuOverlay").classList.add("show");
+}
+
+window.closeMenu = function(){
+document.getElementById("sideMenu").classList.remove("open");
+document.getElementById("menuOverlay").classList.remove("show");
+}
+
+
+
+
+
+
+
+function setActiveMenu(id){
+
+document.getElementById("menuAttendance").classList.remove("activeMenu");
+document.getElementById("menuHistory").classList.remove("activeMenu");
+document.getElementById("menuDownloads").classList.remove("activeMenu");
+
+document.getElementById(id).classList.add("activeMenu");
+
+}
+
+
+
+
+
+
+
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener("touchstart", function(e){
+touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener("touchend", function(e){
+touchEndX = e.changedTouches[0].screenX;
+handleSwipe();
+});
+
+function handleSwipe(){
+
+// swipe right → open menu
+if(touchEndX - touchStartX > 80){
+openMenu();
+}
+
+// swipe left → close menu
+if(touchStartX - touchEndX > 80){
+closeMenu();
+}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+window.loadClassStudents = async function(){
+
+let q = query( collection(db,"class_students"), where("teacher","==",currentTeacher), where("class","==",classSelect.value) );
+
+let snap = await getDocs(q);
+
+for (const d of snap.docs){
+
+let s = d.data();
+
+await addDoc(collection(db,"attendance_today"),{ teacher: currentTeacher, class: classSelect.value, date: dateSelect.value, roll: s.roll, name: s.name, status: "Absent", createdAt: new Date() });
+
+}
+
+renderStudents();
+
+};
+
+
+
+
+
+
+window.clearDownloads = function(){
+if(!confirm("Clear all download records?")) return;
+
+localStorage.removeItem("downloads");  // correct key
+
+let list = document.getElementById("downloadsList");
+if(list){ list.innerHTML = ""; }
+}
+
+
+
+
+
+window.deleteDownload = function(index){
+
+let downloads = JSON.parse(localStorage.getItem("downloads") || "[]");
+
+downloads.splice(index,1);
+
+localStorage.setItem("downloads",JSON.stringify(downloads));
+
+loadDownloads();
+
+}
+
+
+
+
+window.downloadAgain = function(name){
+
+if(name === "Attendance CSV"){
+downloadCSV();
+}
+
+if(name === "Monthly CSV"){
+downloadMonthlyCSV();
+}
+
+}
+
+
+
+
+
+
+
+function sendParentMessage(studentName,status,parent){
+
+if(!parent){
+console.log("Parent number not found");
+return;
+}
+
+let cls = document.getElementById("classSelect").value;
+let date = document.getElementById("dateSelect").value;
+
+let message =
+"Neon Attendance Pro\n\n"+
+"Student: "+studentName+"\n"+
+"Class: "+cls+"\n"+
+"Status: "+status+"\n"+
+"Date: "+date;
+
+let url =
+"https://wa.me/91"+parent+
+"?text="+encodeURIComponent(message);
+
+window.open(url,"_blank");
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function sendAllParents(){
+
+let cls = classSelect.value;
+let date = dateSelect.value;
+
+let q = query(
+collection(db,"attendance_today"),
+where("teacher","==",currentTeacher),
+where("class","==",cls),
+where("date","==",date)
+);
+
+let snap = await getDocs(q);
+
+if(snap.empty){
+alert("No students found");
+return;
+}
+
+snap.forEach(async (docSnap)=>{
+
+let data = docSnap.data();
+
+let studentName = data.name;
+let status = data.status;
+
+// parent number read
+let q2 = query(
+collection(db,"class_students"),
+where("teacher","==",currentTeacher),
+where("class","==",cls),
+where("name","==",studentName)
+);
+
+let snap2 = await getDocs(q2);
+
+snap2.forEach(d=>{
+
+let parent = d.data().parent;
+
+if(parent){
+
+let message =
+"Neon Attendance Pro\n\n"+
+"Student: "+studentName+"\n"+
+"Class: "+cls+"\n"+
+"Status: "+status+"\n"+
+"Date: "+date;
+
+let url =
+"https://wa.me/91"+parent+
+"?text="+encodeURIComponent(message);
+
+window.open(url,"_blank");
+
+}
+
+});
+
+});
+
+}
+
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+
+      </html> 
