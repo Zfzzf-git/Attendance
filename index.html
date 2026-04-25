@@ -821,6 +821,11 @@ box-shadow:
 🚪 Logout
 </button>
 
+<button id="installBtn" class="neonButton" style="display:none">
+📲 Install App
+</button>
+
+    
 </div>
 
 
@@ -2648,6 +2653,33 @@ if ("serviceWorker" in navigator) {
 
 
 
+
+    
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  document.getElementById("installBtn").style.display = "block";
+});
+
+document.getElementById("installBtn").addEventListener("click", async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === 'accepted') {
+      console.log('User installed app');
+    }
+
+    deferredPrompt = null;
+    document.getElementById("installBtn").style.display = "none";
+  }
+});
+
+
+    
 
 </script>
 </body>
