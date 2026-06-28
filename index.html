@@ -2665,18 +2665,52 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 document.getElementById("installBtn").addEventListener("click", async () => {
-  if (deferredPrompt) {
+
+    if (!deferredPrompt) {
+        alert("Install is not available right now.\n\nRefresh the page or close Chrome completely and open the website again.");
+        return;
+    }
+
     deferredPrompt.prompt();
+
     const { outcome } = await deferredPrompt.userChoice;
 
-    if (outcome === 'accepted') {
-      console.log('User installed app');
+    if (outcome === "accepted") {
+        console.log("Installed");
     }
 
     deferredPrompt = null;
-    document.getElementById("installBtn").style.display = "none";
-  }
 });
+    
+    
+//  document.getElementById("installBtn").style.display = "none";
+
+  }
+  
+  
+   else {
+   alert("Your App Is Already Installed.");
+}
+  
+});
+
+
+
+
+
+
+
+
+window.addEventListener("appinstalled", () => {
+    console.log("App Installed");
+
+    document.getElementById("installBtn").innerText = "✅ Installed";
+});
+
+
+
+
+
 
 
     
