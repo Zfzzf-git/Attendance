@@ -1,12 +1,21 @@
-"icons": [
-  {
-    "src": "attendance.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  },
-  {
-    "src": "attendance.png",
-    "sizes": "512x512",
-    "type": "image/png"
-  }
-]
+{
+  "name": "Neon Attendance Pro",
+  "short_name": "Attendance",
+  "start_url": "/Attendance/",
+  "scope": "/Attendance/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "attendance.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "attendance.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
